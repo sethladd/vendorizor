@@ -19,15 +19,15 @@ main(List<String> args) {
   var packagesContents = packagesFile.readAsBytesSync();
   Map<String, Uri> packageConfig = parse(packagesContents, Directory.current.uri);
 
-  print(packageConfig);
-
   var packagesDir = new Directory('packages');
   if (packagesDir.existsSync()) {
     packagesDir.deleteSync(recursive: true);
   }
   packagesDir.createSync();
 
-  print('Vendorizing');
+  print('Vendorizing...');
+
+  Map<String, Uri> newPackageConfig = new Map.from(packageConfig);
 
   packageConfig.forEach((String packageName, Uri uri) {
     if (!uri.toString().contains('/.pub-cache/')) return; // TODO: does this work on Windows?
@@ -45,5 +45,14 @@ main(List<String> args) {
         file.copySync(destPath);
       }
     });
+
+    newPackageConfig[packageName] = packageDir.uri;
   });
+
+  packagesFile.copySync('.packages.bak');
+
+  var buffer = new StringBuffer();
+  write(buffer, newPackageConfig);
+
+  packagesFile.writeAsStringSync(buffer.toString());
 }
