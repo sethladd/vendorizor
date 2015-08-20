@@ -19,7 +19,7 @@ main(List<String> args) {
   var packagesContents = packagesFile.readAsBytesSync();
   Map<String, Uri> packageConfig = parse(packagesContents, Directory.current.uri);
 
-  var packagesDir = new Directory('packages');
+  var packagesDir = new Directory('deps');
   if (packagesDir.existsSync()) {
     packagesDir.deleteSync(recursive: true);
   }
